@@ -1,12 +1,14 @@
-# main.py
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Query
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 import uvicorn
-from model import cosine_similarity, get_image_embedding  # Corrected import statement
+from model import (
+    cosine_similarity,
+    get_image_embedding_from_path,
+    get_image_embedding_from_image
+)
 from PIL import Image
 import io
-
 app = FastAPI()
 
 class WardrobeItem(BaseModel):
@@ -29,11 +31,21 @@ async def get_wardrobe():
     return wardrobe_db
 
 @app.post("/similar-items")
-async def similar_items(image: UploadFile = File(...)):
-    contents = await image.read()
-    image_obj = Image.open(io.BytesIO(contents)).convert("RGB")
-    
-    image_embedding = get_image_embedding(image_obj)
+async def similar_items(
+    image: Optional[UploadFile] = File(None),
+    image_path: Optional[str] = Query(None, description="Local path to the image file")
+):
+    # Ensure that at least one method of image input is provided.
+    if image is None and image_path is None:
+        raise HTTPException(status_code=400, detail="Provide an image file or an image_path.")
+
+    # Compute image embedding from either an uploaded image or a local file path.
+    if image:
+        contents = await image.read()
+        image_obj = Image.open(io.BytesIO(contents)).convert("RGB")
+        image_embedding = get_image_embedding_from_image(image_obj)
+    else:
+        image_embedding = get_image_embedding_from_path(image_path)
     
     similarities = []
     for item in wardrobe_db:
