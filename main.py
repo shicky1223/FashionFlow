@@ -2,6 +2,7 @@ import io
 from fastapi import FastAPI, File, UploadFile
 from CLIPModelintegration import load_clip_model
 from PIL import Image
+import uvicorn
 
 app = FastAPI()
 model, processor = load_clip_model()
@@ -16,5 +17,4 @@ async def upload_image(file: UploadFile = File(...)):
     return {"embedding": embedding}
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
