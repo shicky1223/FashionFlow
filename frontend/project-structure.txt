@@ -1,0 +1,41 @@
+ai_wardrobe/
+├── app/
+│   ├── api/
+│   │   ├── auth/
+│   │   │   ├── login/
+│   │   │   │   └── route.ts
+│   │   │   └── register/
+│   │   │       └── route.ts
+│   │   ├── generate-outfit/
+│   │   │   └── route.ts
+│   │   └── upload/
+│   │       └── route.ts
+│   ├── dashboard/
+│   │   └── page.tsx
+│   ├── login/
+│   │   └── page.tsx
+│   ├── register/
+│   │   └── page.tsx
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   ├── login-form.tsx
+│   ├── outfit-generator.tsx
+│   ├── register-form.tsx
+│   ├── ui/
+│   │   ├── button.tsx
+│   │   ├── input.tsx
+│   │   └── label.tsx
+│   └── wardrobe-uploader.tsx
+├── lib/
+│   ├── auth.ts
+│   └── prisma.ts
+├── prisma/
+│   └── schema.prisma
+├── .env
+├── .gitignore
+├── next.config.mjs
+├── package.json
+├── tailwind.config.ts
+└── tsconfig.json
+
