@@ -1,5 +1,6 @@
 from transformers import CLIPProcessor, CLIPModel
 from PIL import Image
+import numpy as np
 def load_clip_model(model_name = "openai/clip-vit-base-patch32"):
     model = CLIPModel.from_pretrained(model_name)
     processor = CLIPProcessor.from_pretrained(model_name)
@@ -12,6 +13,12 @@ def get_image_embedding(image_path, model, processor):
     outputs = model.get_image_features(**inputs)
     embedding = outputs.detach().numpy()
     return embedding
+
+def cosine_similarity(emb1, emb2):
+    dot = np.dot(emb1, emb2.T)
+    norm1 = np.linalg.norm(emb1)
+    norm2 = np.linalg.norm(emb2)
+    return dot / (norm1*norm2)
 
 if __name__ == "__main__":
     model, processor = load_clip_model()
