@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered Digital Wardrobe - Generate outfit descriptions and recommendations using AI">
+    <title>AI Wardrobe Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Modern Color Scheme and Variables */
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2d2d2d;
+            --accent-primary: #00c6b4; /* Teal */
+            --accent-secondary: #ff6b6b; /* Coral */
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-tertiary: #808080;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --error: #f87171;
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 24px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+            --transition-fast: all 0.2s ease;
+            --transition-normal: all 0.3s ease;
+            --transition-slow: all 0.5s ease;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Layout Components */
+        .app-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: var(--bg-primary);
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-normal);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius-sm);
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon i {
+            color: var(--bg-primary);
+            font-size: 18px;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            color: var(--text-primary);
+        }
+
+        .card-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            padding: 16px;
+            padding-left: 45px;
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--bg-tertiary);
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 198, 180, 0.2);
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder,
+        input[type="email"]::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+        }
+
+        /* File Upload */
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            border: 2px dashed var(--bg-tertiary);
+            border-radius: var(--border-radius-md);
+            margin-bottom: 20px;
+            transition: var(--transition-normal);
+            cursor: pointer;
+        }
+
+        .file-upload:hover {
+            border-color: var(--accent-primary);
+            background-color: rgba(0, 198, 180, 0.05);
+        }
+
+        .file-upload-icon {
+            font-size: 40px;
+            color: var(--accent-primary);
+            margin-bottom: 15px;
+        }
+
+        .file-upload-text {
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-hint {
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+        }
+
+        .file-input {
+            position: absolute;
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--accent-primary);
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Image Preview */
+        .image-preview-container {
+            margin: 20px 0;
+            display: none;
+        }
+
+        .image-preview {
+            width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 24px;
+            border-radius: var(--border-radius-md);
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            border: none;
+            outline: none;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 198, 180, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-tertiary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Results Section */
+        .results-section {
+            margin-top: 40px;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition-normal);
+            display: none;
+        }
+
+        .results-section.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+
+        .results-card {
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .results-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius-sm);
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .results-icon i {
+            color: var(--bg-primary);
+            font-size: 18px;
+        }
+
+        .results-title {
+            font-size: 1.4rem;
+            color: var(--text-primary);
+        }
+
+        .result-item {
+            background-color: var(--bg-tertiary);
+            border-radius: var(--border-radius-md);
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .result-item-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .result-content {
+            color: var(--text-secondary);
+        }
+
+        /* Loading Spinner */
+        .spinner-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            display: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 198, 180, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid var(--accent-primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 16px 20px;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast-success .toast-icon {
+            background-color: var(--success);
+        }
+
+        .toast-error .toast-icon {
+            background-color: var(--error);
+        }
+
+        .toast-warning .toast-icon {
+            background-color: var(--warning);
+        }
+
+        .toast-icon i {
+            color: var(--bg-primary);
+            font-size: 12px;
+        }
+
+        .toast-content {
+            flex-grow: 1;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            color: var(--text-tertiary);
+            font-size: 0.9rem;
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* Login/Register Styles */
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+        }
+
+        .auth-card {
+            width: 100%;
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius-lg);
+            padding: 40px 30px;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition-normal);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .auth-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .auth-form {
+            margin-top: 20px;
+        }
+
+        .auth-footer {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .auth-link {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .auth-link:hover {
+            color: var(--accent-secondary);
+            text-decoration: underline;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: var(--text-tertiary);
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--bg-tertiary);
+        }
+
+        .auth-divider span {
+            padding: 0 15px;
+            font-size: 0.9rem;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: var(--border-radius-md);
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            transition: var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .social-btn i {
+            font-size: 18px;
+        }
+
+        .forgot-password {
+            display: block;
+            text-align: right;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-primary);
+        }
+
+        /* App Views */
+        .view {
+            display: none;
+            width: 100%;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .card, .auth-card {
+                padding: 20px;
+            }
+            
+            .auth-container {
+                padding: 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login View -->
+    <div id="loginView" class="view active">
+        <div class="auth-container">
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+            </div>
+            <h1>AI Wardrobe Assistant</h1>
+            <p class="tagline">Transform your style with AI-powered outfit recommendations</p>
+            
+            <div class="auth-card fade-in">
+                <div class="auth-header">
+                    <h2 class="auth-title">Welcome Back</h2>
+                    <p class="auth-subtitle">Sign in to continue to your wardrobe</p>
+                </div>
+                
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input 
+                                type="email" 
+                                id="loginEmail" 
+                                placeholder="Enter your email" 
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input 
+                                type="password" 
+                                id="loginPassword" 
+                                placeholder="Enter your password" 
+                                required
+                            >
+                        </div>
+                        <a href="#" class="auth-link forgot-password" onclick="showForgotPasswordView()">Forgot password?</a>
+                    </div>
+                    
+                    <div class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe" style="margin-bottom: 0;">Remember me</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="margin-top: 25px;">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </button>
+                </form>
+                
+                <div class="auth-divider">
+                    <span>OR</span>
+                </div>
+                
+                <div class="social-login">
+                    <div class="social-btn">
+                        <i class="fab fa-google"></i>
+                        Google
+                    </div>
+                    <div class="social-btn">
+                        <i class="fab fa-facebook-f"></i>
+                        Facebook
+                    </div>
+                </div>
+                
+                <div class="auth-footer">
+                    <p>Don't have an account? <a class="auth-link" onclick="showRegisterView()">Sign Up</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Register View -->
+    <div id="registerView" class="view">
+        <div class="auth-container">
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+            </div>
+            <h1>AI Wardrobe Assistant</h1>
+            <p class="tagline">Create an account to start your style journey</p>
+            
+            <div class="auth-card fade-in">
+                <div class="auth-header">
+                    <h2 class="auth-title">Create Account</h2>
+                    <p class="auth-subtitle">Fill in your details to get started</p>
+                </div>
+                
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="registerName">Full Name</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user input-icon"></i>
+                            <input 
+                                type="text" 
+                                id="registerName" 
+                                placeholder="Enter your full name" 
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input 
+                                type="email" 
+                                id="registerEmail" 
+                                placeholder="Enter your email" 
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input 
+                                type="password" 
+                                id="registerPassword" 
+                                placeholder="Create a password" 
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input 
+                                type="password" 
+                                id="confirmPassword" 
+                                placeholder="Confirm your password" 
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Create Account
+                    </button>
+                </form>
+                
+                <div class="auth-divider">
+                    <span>OR</span>
+                </div>
+                
+                <div class="social-login">
+                    <div class="social-btn">
+                        <i class="fab fa-google"></i>
+                        Google
+                    </div>
+                    <div class="social-btn">
+                        <i class="fab fa-facebook-f"></i>
+                        Facebook
+                    </div>
+                </div>
+                
+                <div class="auth-footer">
+                    <p>Already have an account? <a class="auth-link" onclick="showLoginView()">Sign In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Forgot Password View -->
+    <div id="forgotPasswordView" class="view">
+        <div class="auth-container">
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+            </div>
+            <h1>AI Wardrobe Assistant</h1>
+            <p class="tagline">Reset your password</p>
+            
+            <div class="auth-card fade-in">
+                <div class="auth-header">
+                    <h2 class="auth-title">Forgot Password</h2>
+                    <p class="auth-subtitle">Enter your email to receive a reset link</p>
+                </div>
+                
+                <form id="forgotPasswordForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="resetEmail">Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input 
+                                type="email" 
+                                id="resetEmail" 
+                                placeholder="Enter your email" 
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Reset Link
+                    </button>
+                </form>
+                
+                <div class="auth-footer">
+                    <p>Remember your password? <a class="auth-link" onclick="showLoginView()">Back to Sign In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App View -->
+    <div id="appView" class="view">
+        <div class="app-container">
+            <!-- Header -->
+            <header class="header">
+                <div class="logo-container">
+                    <div class="logo">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                </div>
+                <h1>AI Wardrobe Assistant</h1>
+                <p class="tagline">Transform your style with AI-powered outfit recommendations and fashion insights</p>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Image Upload Card -->
+                <div class="card fade-in delay-1">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <h2 class="card-title">Analyze Clothing</h2>
+                    </div>
+                    <div class="card-content">
+                        <label for="imageInput" class="file-upload" id="dropArea">
+                            <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
+                            <p class="file-upload-text">Drag & drop your image or click to browse</p>
+                            <p class="file-upload-hint">Supports JPG, PNG (max 5MB)</p>
+                            <input type="file" id="imageInput" class="file-input" accept="image/*" aria-label="Upload clothing image">
+                        </label>
+                        <div id="fileName" class="file-name"></div>
+                        
+                        <div class="image-preview-container" id="previewContainer">
+                            <img id="imagePreview" class="image-preview" alt="Image preview">
+                        </div>
+                        
+                        <button id="uploadBtn" class="btn btn-primary" onclick="uploadImage()">
+                            <i class="fas fa-  class="btn btn-primary" onclick="uploadImage()">
+                            <i class="fas fa-wand-magic-sparkles"></i>
+                            Analyze Image
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Text Prompt Card -->
+                <div class="card fade-in delay-2">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h2 class="card-title">Generate Outfit</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-group">
+                            <label for="descriptionInput">What are you looking for?</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-search input-icon"></i>
+                                <input 
+                                    type="text" 
+                                    id="descriptionInput" 
+                                    placeholder="E.g., Business casual for summer" 
+                                    aria-label="Enter outfit description prompt"
+                                >
+                            </div>
+                        </div>
+                        
+                        <button id="generateBtn" class="btn btn-primary" onclick="generateDescription()">
+                            <i class="fas fa-magic"></i>
+                            Generate Outfit
+                        </button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Loading Spinner -->
+            <div id="spinner" class="spinner-container" role="status">
+                <div class="spinner"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+
+            <!-- Results Section -->
+            <section id="resultsSection" class="results-section">
+                <div class="results-card fade-in delay-3">
+                    <div class="results-header">
+                        <div class="results-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h2 class="results-title">AI Results</h2>
+                    </div>
+                    <div id="result"></div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>&copy; 2023 AI Wardrobe Assistant | Powered by CLIP AI Technology | <a href="#" class="auth-link" onclick="logout()">Logout</a></p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000"; // FastAPI URL
+
+        // View Management
+        function showView(viewId) {
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Show the requested view
+            document.getElementById(viewId).classList.add('active');
+        }
+        
+        function showLoginView() {
+            showView('loginView');
+        }
+        
+        function showRegisterView() {
+            showView('registerView');
+        }
+        
+        function showForgotPasswordView() {
+            showView('forgotPasswordView');
+        }
+        
+        function showAppView() {
+            showView('appView');
+        }
+        
+        function logout() {
+            // Clear any stored authentication
+            localStorage.removeItem('authToken');
+            showLoginView();
+            showToast('Logged out successfully');
+        }
+
+        // Form Submissions
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Validate inputs
+            if (!email || !password) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+            
+            // Simulate login (replace with actual API call)
+            setTimeout(() => {
+                // Store authentication token (in a real app, this would come from your backend)
+                localStorage.setItem('authToken', 'sample-auth-token');
+                showAppView();
+                showToast('Logged in successfully');
+            }, 1000);
+        });
+        
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validate inputs
+            if (!name || !email || !password || !confirmPassword) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+            
+            // Simulate registration (replace with actual API call)
+            setTimeout(() => {
+                showLoginView();
+                showToast('Account created successfully! Please log in.');
+            }, 1000);
+        });
+        
+        document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('resetEmail').value;
+            
+            // Validate input
+            if (!email) {
+                showToast('Please enter your email', 'error');
+                return;
+            }
+            
+            // Simulate password reset (replace with actual API call)
+            setTimeout(() => {
+                showLoginView();
+                showToast('Password reset link sent to your email');
+            }, 1000);
+        });
+
+        // File input handling
+        const imageInput = document.getElementById("imageInput");
+        const fileName = document.getElementById("fileName");
+        const imagePreview = document.getElementById("imagePreview");
+        const previewContainer = document.getElementById("previewContainer");
+        const dropArea = document.getElementById("dropArea");
+        
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropArea.style.borderColor = 'var(--accent-primary)';
+            dropArea.style.backgroundColor = 'rgba(0, 198, 180, 0.05)';
+        }
+        
+        function unhighlight() {
+            dropArea.style.borderColor = 'var(--bg-tertiary)';
+            dropArea.style.backgroundColor = 'transparent';
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            imageInput.files = files;
+            handleFiles(files);
+        }
+        
+        function handleFiles(files) {
+            if (files.length) {
+                const file = files[0];
+                fileName.textContent = file.name;
+                
+                // Show image preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewContainer.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        imageInput.addEventListener("change", function() {
+            if (this.files && this.files[0]) {
+                handleFiles(this.files);
+            } else {
+                fileName.textContent = "";
+                previewContainer.style.display = "none";
+            }
+        });
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById("toastContainer");
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            let icon = 'check';
+            if (type === 'error') icon = 'times';
+            if (type === 'warning') icon = 'exclamation';
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas fa-${icon}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Force reflow to enable transition
+            toast.offsetWidth;
+            
+            // Show toast
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            // Remove toast after delay
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toastContainer.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Upload Image function
+        async function uploadImage() {
+            const fileInput = document.getElementById("imageInput");
+            const spinner = document.getElementById("spinner");
+            const uploadBtn = document.getElementById("uploadBtn");
+            const resultsSection = document.getElementById("resultsSection");
+            
+            if (!fileInput.files[0]) {
+                showToast("Please select an image first", "warning");
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("file", file);
+            
+            // Show loading state
+            spinner.style.display = "flex";
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            
+            try {
+                const response = await fetch(`${API_URL}/upload-image`, {
+                    method: 'POST',
+                    body: formData,
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Display the result
+                resultsSection.classList.add("show");
+                document.getElementById("result").innerHTML = `
+                    <div class="result-item">
+                        <div class="result-item-header">
+                            <i class="fas fa-tag"></i>
+                            Item Type
+                        </div>
+                        <div class="result-content">
+                            ${data.item_type || "Clothing item"}
+                        </div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-item-header">
+                            <i class="fas fa-palette"></i>
+                            Colors
+                        </div>
+                        <div class="result-content">
+                            ${data.colors || "Not detected"}
+                        </div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-item-header">
+                            <i class="fas fa-info-circle"></i>
+                            Style Analysis
+                        </div>
+                        <div class="result-content">
+                            ${data.style_analysis || "Not available"}
+                        </div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-item-header">
+                            <i class="fas fa-chart-simple"></i>
+                            Confidence Score
+                        </div>
+                        <div class="result-content">
+                            ${data.confidence || "N/A"}
+                        </div>
+                    </div>
+                `;
+                
+                showToast("Image analyzed successfully!");
+                
+            } catch (error) {
+                console.error("Error:", error);
+                showToast("Failed to analyze image", "error");
+                
+                // Show error in results
+                resultsSection.classList.add("show");
+                document.getElementById("result").innerHTML = `
+                    <div class="result-item">
+                        <div class="result-item-header">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Error
+                        </div>
+                        <div class="result-content">
+                            <p>Failed to analyze image. Please check your connection and try again.</p>
+                            <p class="mt-2 text-sm opacity-70">Technical details: ${error.message}</p>
+                        </div>
+                    </div>
+                `;
+            } finally {
+                // Reset loading state
+                spinner.style.display = "none";
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Analyze Image';
+            }
+        }
+
+        // Generate Description function
+        async function generateDescription() {
+            const prompt = document.getElementById("descriptionInput").value;
+            const spinner = document.getElementById("spinner");
+            const generateBtn = document.getElementById("generateBtn");
+            const resultsSection = document.getElementById("resultsSection");
+            
+            if (!prompt.trim()) {
+                showToast("Please enter a description prompt", "warning");
+                return;
+            }
+            
+            // Show loading state
+            spinner.style.display = "flex";
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            
+            try {
+                const response = await fetch(`${API_URL}/generate-description`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: prompt }),
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Format the description with better styling
+                const description = data.generated_description || "No description generated";
+                const formattedDescription = formatDescription(description);
+                
+                // Display the result
+                resultsSection.classList.add("show");
+                document.getElementById("result").innerHTML = `
+                    <div class="result-item">
+                        <div class="result-item-header">
+                            <i class="fas fa-tshirt"></i>
+                            Generated Outfit
+                        </div>
+                        <div class="result-content">
+                            ${formattedDescription}
+                        </div>
+                    </div>
+                `;
+                
+                showToast("Outfit generated successfully!");
+                
+            } catch (error) {
+                console.error("Error:", error);
+                showToast("Failed to generate outfit", "error");
+                
+                // Show error in results
+                resultsSection.classList.add("show");
+                document.getElementById("result").innerHTML = `
+                    <div class="result-item">
+                        <div class="result-item-header">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Error
+                        </div>
+                        <div class="result-content">
+                            <p>Failed to generate outfit description. Please check your connection and try again.</p>
+                            <p class="mt-2 text-sm opacity-70">Technical details: ${error.message}</p>
+                        </div>
+                    </div>
+                `;
+            } finally {
+                // Reset loading state
+                spinner.style.display = "none";
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Outfit';
+            }
+        }
+
+        // Format description text
+        function formatDescription(text) {
+            // Split text into lines
+            const lines = text.split('\n');
+            let formattedText = '';
+            
+            // Process each line
+            for (const line of lines) {
+                const trimmedLine = line.trim();
+                if (!trimmedLine) continue;
+                
+                // Check if line is a heading
+                if (trimmedLine.startsWith('#')) {
+                    const headingText = trimmedLine.replace(/^#+\s/, '');
+                    formattedText += `<h3 style="color: var(--accent-primary); margin-top: 15px; margin-bottom: 10px; font-size: 1.1rem;">${headingText}</h3>`;
+                }
+                // Check if line is a list item
+                else if (trimmedLine.startsWith('-') || trimmedLine.startsWith('*')) {
+                    const itemText = trimmedLine.substring(1).trim();
+                    formattedText += `<div style="display: flex; margin-bottom: 8px;">
+                        <span style="color: var(--accent-primary); margin-right: 8px;">•</span>
+                        <span>${itemText}</span>
+                    </div>`;
+                }
+                // Regular paragraph
+                else {
+                    formattedText += `<p style="margin-bottom: 10px;">${trimmedLine}</p>`;
+                }
+            }
+            
+            return formattedText;
+        }
+
+        // Handle Enter key press in the input field
+        document.getElementById("descriptionInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                generateDescription();
+            }
+        });
+
+        // Check if user is already logged in
+        function checkAuth() {
+            const authToken = localStorage.getItem('authToken');
+            if (authToken) {
+                showAppView();
+            } else {
+                showLoginView();
+            }
+        }
+
+        // Initialize the app
+        checkAuth();
+    </script>
+</body>
+</html>
