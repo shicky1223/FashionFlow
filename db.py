@@ -7,7 +7,7 @@ import numpy as np
 import faiss
 from CLIPModelintegration import load_clip_model
 
-model, processor  = load_clip_model()
+CLIPmodel, processor  = load_clip_model()
 embedding_dim = 512
 index = faiss.IndexFlatL2(embedding_dim)
 
@@ -21,7 +21,7 @@ async def upload_image(file: UploadFile = File(...)):
     contents = await file.read()
     image = Image.open(io.BytesIO(contents))
     inputs = processor(images=image, return_tensors="pt", padding=True)
-    outputs = model.get_image_features(**inputs)
+    outputs = CLIPmodel.get_image_features(**inputs)
     embedding = outputs.detach().numpy().tolist()  # Convert to list for JSON serialization
     if embedding.shape[1] != embedding_dim:
         raise HTTPException(status_code=500, detail="Embedding dimension mismatch.")
@@ -43,7 +43,7 @@ def search(query_index: int, k: int = 5):
 
     distances, indicies = index.search(query_vector, k)
     results = []
-    for dist, idx in zip(distances[0], indices[0]):
+    for dist, idx in zip(distances[0], indicies[0]):
         result = {
             "index": int(idx),
             "distance": float(dist),

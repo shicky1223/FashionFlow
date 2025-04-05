@@ -5,7 +5,6 @@ def load_clip_model(model_name = "openai/clip-vit-base-patch32"):
     model = CLIPModel.from_pretrained(model_name)
     processor = CLIPProcessor.from_pretrained(model_name)
     return model, processor
-
 def get_image_embedding(image_path, model, processor):
     image = Image.open(image_path)
     #Process the image without text prompts 
@@ -13,7 +12,6 @@ def get_image_embedding(image_path, model, processor):
     outputs = model.get_image_features(**inputs)
     embedding = outputs.detach().numpy()
     return embedding
-
 def cosine_similarity(emb1, emb2):
     dot = np.dot(emb1, emb2.T)
     norm1 = np.linalg.norm(emb1)
