@@ -3,11 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Front End</title>
+    <title>AI-powered Digital Wardrobe</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #555;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"], input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #e9f7e8;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #333;
+            border: 1px solid #d4e5d4;
+        }
+
+        .output-box {
+            background-color: #fafafa;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .output-box strong {
+            color: #333;
+        }
+
+        .output-box p {
+            margin: 0;
+        }
+
+        /* Responsive design for smaller screens */
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            input[type="file"], input[type="text"], button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello, World!</h1>
+
+    <div class="container">
+        <h1>AI-powered Digital Wardrobe</h1>
+        <p>Upload an image or provide a prompt to generate outfit descriptions and recommendations using AI.</p>
+
+        <!-- Image Upload Form -->
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="uploadImage()">Upload Image</button>
+
+        <br><br>
+
+        <!-- Text Input Form -->
+        <input type="text" id="descriptionInput" placeholder="Enter outfit description prompt" />
+        <button onclick="generateDescription()">Generate Description</button>
+
+        <!-- Display Results -->
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function uploadImage() {
+            const fileInput = document.getElementById("imageInput");
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("file", file);
+
+            // Send the image to the FastAPI backend
+            const response = await fetch('http://127.0.0.1:8000/upload-image', {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await response.json();
+
+            // Display the result (embedding)
+            document.getElementById("result").innerHTML = `
+                <div class="output-box">
+                    <strong>Image Embedding:</strong>
+                    <p>${JSON.stringify(data.embedding)}</p>
+                </div>
+            `;
+        }
+
+        async function generateDescription() {
+            const prompt = document.getElementById("descriptionInput").value;
+
+            // Send the prompt to generate description
+            const response = await fetch('http://127.0.0.1:8000/generate-description', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ prompt: prompt }),
+            });
+
+            const data = await response.json();
+
+            // Display the result (generated description)
+            document.getElementById("result").innerHTML = `
+                <div class="output-box">
+                    <strong>Generated Description:</strong>
+                    <p>${data.generated_description}</p>
+                </div>
+            `;
+        }
+    </script>
+
 </body>
 </html>
-
-
