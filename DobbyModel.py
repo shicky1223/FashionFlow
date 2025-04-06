@@ -31,8 +31,6 @@ def generate_outfit_description(prompt: str):
         temperature=0.65,
         top_p=0.9
     )
-<<<<<<< HEAD
-=======
     return outputs[0]['generated_text']
 
 # Function to get the image embedding from CLIP
@@ -64,7 +62,6 @@ outputs = generator(
     temperature=0.65,
     top_p=0.9
 )
->>>>>>> 6817560d768add9eae5c39f5efeaac926cd3d4d9
 
     # Print the generated text
     print(outputs[0]['generated_text'])
